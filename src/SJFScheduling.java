@@ -2,21 +2,27 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-public class SJFScheduling implements SchedulingAlgorithms{
-    private Integer agingTime = 5;
-    private ArrayList<Process> answer = new ArrayList<>();
+public class SJFScheduling extends AbstractSchedulingAlgorithm{
 
-    private PriorityQueue<Process> pqArrivalTime = new PriorityQueue<>(Comparator.comparingInt(p -> p.arrivalTime)); // Ascending
-    private PriorityQueue<Process> pqPriorityNumber = new PriorityQueue<>(
-            (p1, p2) -> p1.priorityNumber.equals(p2.priorityNumber) ? p1.burstTime - p2.burstTime : p2.priorityNumber - p1.priorityNumber
-    ); // Ascending
 
-    SJFScheduling(ArrayList<Process> processes){
+    SJFScheduling(ArrayList<Process> processes, int agingTime){
+        super(processes, 0, agingTime);
         for (int i = 0; i < processes.size(); i++){
             processes.get(i).priorityNumber = 0;
-            pqArrivalTime.add(processes.get(i));
         }
 
+    }
+
+    @Override
+    public void intializeReadyQueue() {
+        readyQueue = new PriorityQueue<>(
+                (p1, p2) -> (p1.priorityNumber == p2.priorityNumber) ? p1.burstTime - p2.burstTime : p2.priorityNumber - p1.priorityNumber
+        ); // Ascending
+    }
+
+    @Override
+    public void calcAnswer(ArrayList<Process> processes, int contextTime, int agingTime) {
+        int piriorityTime = agingTime;
         while (!pqArrivalTime.isEmpty()){
             Process process = pqArrivalTime.poll();
             if (answer.isEmpty())
@@ -24,51 +30,40 @@ public class SJFScheduling implements SchedulingAlgorithms{
             else
                 process.completionTime = answer.get(answer.size() - 1).completionTime + process.burstTime;
             answer.add(process);
-            Integer time = process.arrivalTime + process.burstTime;
+            int time = process.arrivalTime + process.burstTime;
             while (!pqArrivalTime.isEmpty() && pqArrivalTime.peek().arrivalTime <= time){
-                pqPriorityNumber.add(pqArrivalTime.poll());
+                readyQueue.add(pqArrivalTime.poll());
             }
-            while (!pqPriorityNumber.isEmpty()){
+            while (!readyQueue.isEmpty()){
                 while (!pqArrivalTime.isEmpty() && pqArrivalTime.peek().arrivalTime <= process.completionTime){
-                    pqPriorityNumber.add(pqArrivalTime.poll());
+                    readyQueue.add(pqArrivalTime.poll());
                 }
-                if (process.completionTime >= agingTime){
-                    Process[] pr = pqPriorityNumber.toArray(new Process[0]);
-                    pqPriorityNumber.clear();
+                if (process.completionTime >= piriorityTime){
+                    Process[] pr = readyQueue.toArray(new Process[0]);
+                    readyQueue.clear();
                     for (Process p : pr){
                         if (p.arrivalTime + process.completionTime <= agingTime)
                             p.priorityNumber++;
                     }
                     for (Process p : pr)
-                        pqPriorityNumber.add(p);
-                    agingTime *=2;
+                        readyQueue.add(p);
+                    piriorityTime += agingTime;
                 }
                 else{
-                    Process process2 = pqPriorityNumber.poll();
+                    Process process2 = readyQueue.poll();
                     process2.completionTime = process.completionTime + process2.burstTime;
                     process = process2;
                     answer.add(process);
                 }
             }
 
-
+        }
+        for (Process process : answer){
+            for (int i = 0; i < process.burstTime; i++){
+                ganttChart.add(process);
+            }
         }
     }
-    @Override
-    public ArrayList<Process> processesExecutionOrder() {
-        return answer;
-    }
 
-    @Override
-    public void calcWaitingTime() {
-        calcTurnAroundTime();
-        for (int i = 0; i < answer.size(); i++)
-            answer.get(i).waitingTime = answer.get(i).turnAroundTime - answer.get(i).burstTime;
-    }
 
-    @Override
-    public void calcTurnAroundTime() {
-        for (int i = 0; i < answer.size(); i++)
-            answer.get(i).turnAroundTime = answer.get(i).completionTime - answer.get(i).arrivalTime;
-    }
 }

@@ -7,6 +7,8 @@ import java.util.Scanner;
 
 public class Main {
 
+
+
     private static ProcessPanel getProcessPanel(ArrayList<Process> ganttChar) {
         int totalWidth = 50;
         int height = 200;
@@ -83,28 +85,40 @@ public class Main {
             while (numberOfProcesses != 0 && scanner.hasNextLine()){
                 line = scanner.nextLine();
                 String[] parts = line.split("\\s+");
-                processes.add(new Process(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4])));
+                processes.add(new Process(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4]), Integer.parseInt(parts[5])));
                 numberOfProcesses--;
             }
+
+
             int agingTime = 10;
-            int op = 1;
+            String op = "4";
             SchedulingAlgorithms sch = null;
-            if (op == 1){
-                sch = new PriorityScheduling(processes, contextSwitching);
-            } else if (op == 2) {
-                sch = new SJFScheduling(processes, agingTime);
-            } else if (op == 3) {
-                sch = new SRTFScheduling(processes, contextSwitching, agingTime);
-            } else if (op == 4) {
+            if (processes.size() != 0){
+                switch (op) {
+                    case "1":
+                        sch = new PriorityScheduling(processes, contextSwitching);
+                        break;
+                    case "2":
+                        sch = new SJFScheduling(processes, agingTime);
+                        break;
+                    case "3":
+                        sch = new SRTFScheduling(processes, contextSwitching, agingTime);
+                        break;
+                    case "4":
+                        sch = new FCAI(processes, contextSwitching, agingTime);
+                        break;
+                    default:
+                        sch = null; // Handle invalid options (optional)
+                        System.out.println("Invalid option. Please select a valid scheduling algorithm.");
+                }
 
+                if (sch != null) {
+                    sch.calcWaitingTime();
+                    printAnswer(sch.processesExecutionOrder(), sch.ganttChart());
+                    System.out.println("The Average Waiting Time is: " + sch.calcAvgTurnAroundTime(sch.processesExecutionOrder()));
+                    System.out.println("The Average Turnaround Time is: " + sch.calcAvgWaitingTime(sch.processesExecutionOrder()));
+                }
             }
-            if (sch != null){
-                sch.calcWaitingTime();
-                printAnswer(sch.processesExecutionOrder(), sch.ganttChart());
-                System.out.println("The Average Waiting Time is: " + sch.calcAvgTurnAroundTime(sch.processesExecutionOrder()));
-                System.out.println("The Average Turnaround  Time is: " + sch.calcAvgWaitingTime(sch.processesExecutionOrder()));
-            }
-
 
             scanner.close(); // Close the scanner to free resources
         } catch (FileNotFoundException e) {

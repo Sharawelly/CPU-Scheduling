@@ -1,3 +1,5 @@
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -5,13 +7,29 @@ import java.util.Scanner;
 
 public class Main {
 
-    public static void printAnswer(ArrayList<Process> processes) {
+    private static ProcessPanel getProcessPanel(ArrayList<Process> ganttChar) {
+        int totalWidth = 50;
+        int height = 200;
+        int processHeight = 50;
+        int padding = 10;
+
+
+        for (Process process : ganttChar) {
+            totalWidth += process.burstTime * 5 + padding;
+        }
+
+        ProcessPanel processPanel = new ProcessPanel(ganttChar);
+        processPanel.setPreferredSize(new Dimension(totalWidth + 50, processHeight + height));
+        return processPanel;
+    }
+
+    public static void printAnswer(ArrayList<Process> processes, ArrayList<Process> ganttChar) {
         // Print table header
         System.out.printf("%-15s %-10s %-15s %-12s %-15s %-18s %-18s %-15s\n",
                 "Process-Name", "Color", "Arrival-Time", "Burst-Time",
                 "Priority", "Completion-Time", "Turnaround-Time", "Waiting-Time");
 
-        // Print a separator line
+
         System.out.println("--------------------------------------------------------------------------------------------------------------------------");
 
 
@@ -22,7 +40,29 @@ public class Main {
                     process.completionTime, process.turnAroundTime,
                     process.waitingTime);
         }
+
+
+        ProcessPanel processPanel = getProcessPanel(ganttChar);
+
+        // Create and display the GUI
+        JFrame frame = new JFrame("Process Visualization");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.getContentPane().setBackground(Color.BLACK);
+
+        // Add the panel to a JScrollPane for better usability
+        JScrollPane scrollPane = new JScrollPane(processPanel);
+        frame.add(scrollPane);
+
+        // Use pack() to adjust the frame size dynamically
+        frame.pack();
+
+
+        // Make the frame visible
+        frame.setVisible(true);
     }
+
+
 
 
     public static void main(String[] args) {
@@ -46,34 +86,34 @@ public class Main {
                 processes.add(new Process(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), Integer.parseInt(parts[4])));
                 numberOfProcesses--;
             }
-            int op = 3;
+            int agingTime = 10;
+            int op = 1;
+            SchedulingAlgorithms sch = null;
             if (op == 1){
-                SchedulingAlgorithms sch = new PriorityScheduling(processes, contextSwitching);
-                sch.calcWaitingTime();
-                printAnswer(sch.processesExecutionOrder());
-                System.out.println("The Average Waiting Time is: " + sch.calcAvgTurnAroundTime(sch.processesExecutionOrder()));
-                System.out.println("The Average Turnaround  Time is: " + sch.calcAvgWaitingTime(sch.processesExecutionOrder()));
+                sch = new PriorityScheduling(processes, contextSwitching);
             } else if (op == 2) {
-                SchedulingAlgorithms sch = new SJFScheduling(processes);
-                sch.calcWaitingTime();
-                printAnswer(sch.processesExecutionOrder());
-                System.out.println("The Average Waiting Time is: " + sch.calcAvgTurnAroundTime(sch.processesExecutionOrder()));
-                System.out.println("The Average Turnaround  Time is: " + sch.calcAvgWaitingTime(sch.processesExecutionOrder()));
+                sch = new SJFScheduling(processes, agingTime);
             } else if (op == 3) {
-                SchedulingAlgorithms sch = new SRTFSCheduling(processes, contextSwitching);
-                sch.calcWaitingTime();
-                printAnswer(sch.processesExecutionOrder());
-                System.out.println("The Average Waiting Time is: " + sch.calcAvgTurnAroundTime(sch.processesExecutionOrder()));
-                System.out.println("The Average Turnaround  Time is: " + sch.calcAvgWaitingTime(sch.processesExecutionOrder()));
+                sch = new SRTFScheduling(processes, contextSwitching, agingTime);
             } else if (op == 4) {
 
             }
+            if (sch != null){
+                sch.calcWaitingTime();
+                printAnswer(sch.processesExecutionOrder(), sch.ganttChart());
+                System.out.println("The Average Waiting Time is: " + sch.calcAvgTurnAroundTime(sch.processesExecutionOrder()));
+                System.out.println("The Average Turnaround  Time is: " + sch.calcAvgWaitingTime(sch.processesExecutionOrder()));
+            }
+
 
             scanner.close(); // Close the scanner to free resources
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + e.getMessage());
         }
 
-
     }
+
+
+
+
 }

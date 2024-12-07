@@ -1,1 +1,7 @@
-0 0 0
+4 3 1
+P1 red 0  6  4  4
+P2 pink 0  10  9  3
+P3 purple  2  2   3  5
+P4 orange 3  3  8  2
+
+

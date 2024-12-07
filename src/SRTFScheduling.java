@@ -7,9 +7,6 @@ public class SRTFScheduling extends AbstractSchedulingAlgorithm {
 
     SRTFScheduling(ArrayList<Process> processes, int contextTime, int agingTime) {
         super(processes, contextTime, agingTime);
-        for (int i = 0; i < processes.size(); i++) {
-            processes.get(i).priorityNumber = 0;
-        }
 
     }
 
@@ -29,6 +26,12 @@ public class SRTFScheduling extends AbstractSchedulingAlgorithm {
 
     @Override
     public void calcAnswer(ArrayList<Process> processes, int contextTime, int agingTime) {
+        Process[] priorityToZero = pqArrivalTime.toArray(new Process[0]);
+        pqArrivalTime.clear();
+        for (Process p : priorityToZero){
+            p.priorityNumber = 0;
+            pqArrivalTime.add(p);
+        }
         if (processes.size() <= 1) {
             ganttChart = processes;
             return;

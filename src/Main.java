@@ -91,7 +91,7 @@ public class Main {
 
 
             int agingTime = 10;
-            String op = "1";
+            String op = "4";
             SchedulingAlgorithms sch = null;
             if (processes.size() != 0){
                 switch (op) {

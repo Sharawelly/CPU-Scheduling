@@ -41,6 +41,16 @@ public class FCAI extends AbstractSchedulingAlgorithm {
                 // Finish current process
                 currentTime += currentProcess.remainingTime;
                 done++;
+                answer.add(currentProcess);
+                for (int i = 0; i < currentProcess.remainingTime; i++) {
+                    ganttChart.add(currentProcess);
+                }
+                if (done != processes.size()) {
+                    for (int i = 0; i < contextTime; i++) {
+                        ganttChart.add(new Process());
+                    }
+                }
+
                 finish(currentProcess, currentTime, FCAIPQ, processed, queue, v1, v2, contextTime, done, currentProcess.remainingTime);
 
                 // Ensure queue is not empty before accessing the first element
@@ -140,7 +150,7 @@ public class FCAI extends AbstractSchedulingAlgorithm {
 //                p.calculateFCAIFactor(v1, v2); // mynf34 n7sb el fcai factor hena le an el v1,v2 lesa mt7sb4
                 processed.put(p, true);
                 queue.add(p);
-                FCAIPQ.add(p);
+//                FCAIPQ.add(p);
                 System.out.println("Process " + p.name + " added to queue at time " + p.arrivalTime);
             }
             v1 = Math.max(v1, p.arrivalTime);
@@ -149,6 +159,7 @@ public class FCAI extends AbstractSchedulingAlgorithm {
         for (Process p : pqArrivalTime) {
             if (p.arrivalTime <= currentTime && processed.get(p)) {
                 p.calculateFCAIFactor(v1 / 10, v2 / 10); // hena mashy
+                FCAIPQ.add(p);
             }
         }
 

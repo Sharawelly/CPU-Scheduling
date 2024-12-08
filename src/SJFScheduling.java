@@ -7,9 +7,6 @@ public class SJFScheduling extends AbstractSchedulingAlgorithm{
 
     SJFScheduling(ArrayList<Process> processes, int agingTime){
         super(processes, 0, agingTime);
-        for (int i = 0; i < processes.size(); i++){
-            processes.get(i).priorityNumber = 0;
-        }
 
     }
 
@@ -22,6 +19,7 @@ public class SJFScheduling extends AbstractSchedulingAlgorithm{
 
     @Override
     public void calcAnswer(ArrayList<Process> processes, int contextTime, int agingTime) {
+        super.priorityToZero();
         int piriorityTime = agingTime;
         while (!pqArrivalTime.isEmpty()){
             Process process = pqArrivalTime.poll();

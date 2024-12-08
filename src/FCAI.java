@@ -29,6 +29,7 @@ public class FCAI extends AbstractSchedulingAlgorithm {
             if (done == pqArrivalTime.size() - 1) {
                 currentTime += currentProcess.remainingTime;
                 done++;
+                answer.add(currentProcess);
                 for (int i = 0; i < currentProcess.remainingTime; i++) {
                     ganttChart.add(currentProcess);
                 }
@@ -74,6 +75,7 @@ public class FCAI extends AbstractSchedulingAlgorithm {
 
                 highestFcai = FCAIPQ.peek();
             }
+            answer.add(currentProcess);
             for (int i = 0; i < numberOfExecutions; i++) {
                 ganttChart.add(currentProcess);
             }

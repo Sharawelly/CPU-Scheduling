@@ -13,6 +13,7 @@ public abstract class AbstractSchedulingAlgorithm implements SchedulingAlgorithm
         for (int i = 0; i < processes.size(); i++) {
             pqArrivalTime.add(processes.get(i));
         }
+
         intializeReadyQueue();
 
         calcAnswer(processes, contextTime, agingTime);
@@ -26,6 +27,15 @@ public abstract class AbstractSchedulingAlgorithm implements SchedulingAlgorithm
     @Override
     public ArrayList<Process> processesExecutionOrder() {
         return answer;
+    }
+
+    protected void priorityToZero() {
+        Process[] priorityToZero = pqArrivalTime.toArray(new Process[0]);
+        pqArrivalTime.clear();
+        for (Process p : priorityToZero){
+            p.priorityNumber = 0;
+            pqArrivalTime.add(p);
+        }
     }
 
     @Override

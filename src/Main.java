@@ -17,7 +17,7 @@ public class Main {
         System.out.println("4. FCAI");
         System.out.println("5. Exit");
 
-        int choice = 3;
+        int choice = 2;
         switch (choice) {
             case 1:
                 return new PriorityScheduling(processes, contextSwitching);
@@ -126,7 +126,7 @@ public class Main {
             }
 
 
-            int agingTime = 2;
+            int agingTime = 5;
             SchedulingAlgorithms sch = chooseScheduler(processes, contextSwitching, agingTime);
             if (processes.size() != 0){
                 if (sch != null) {

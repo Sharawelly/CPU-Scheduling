@@ -80,7 +80,7 @@ public class SRTFScheduling extends AbstractSchedulingAlgorithm {
                 Process[] pr = readyQueue.toArray(new Process[0]);
                 readyQueue.clear();
                 for (Process p : pr) {
-                    if ((currentTime - (p.arrivalTime + p.completionTime)) >= agingTime)
+                    if ((currentTime - (p.arrivalTime + p.completionTime)) >= agingTime && checkPeek != p)
                         p.priorityNumber++;
                 }
                 for (Process p : pr)
@@ -94,7 +94,7 @@ public class SRTFScheduling extends AbstractSchedulingAlgorithm {
                 piriorityTime += agingTime;
 
             }
-            checkPeek = readyQueue.peek();
+            checkPeek = process;
 
         }
 

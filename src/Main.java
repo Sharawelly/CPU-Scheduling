@@ -3,11 +3,45 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
 
+    static SchedulingAlgorithms chooseScheduler(ArrayList<Process> processes, int contextSwitching, int agingTime) {
+        System.out.println("Choose Scheduling: ");
+        System.out.println("1. Non-Preemptive Priority");
+        System.out.println("2. Non-Preemptive SJF");
+        System.out.println("3. Preemptive SJF (SRTF)");
+        System.out.println("4. FCAI");
+        System.out.println("5. Exit");
+
+        int choice = 3;
+        switch (choice) {
+            case 1:
+                return new PriorityScheduling(processes, contextSwitching);
+            case 2:
+                return new SJFScheduling(processes, agingTime);
+            case 3:
+                return new SRTFScheduling(processes, contextSwitching, agingTime);
+            case 4:
+                return new FCAI(processes, contextSwitching, agingTime);
+            case 5:
+                return null;
+            default:
+                System.out.println("Invalid choice. Exiting.");
+                return null;
+        }
+    }
+    static int getValidatedIntInput() {
+        Scanner scanner = new Scanner(System.in);
+        while (!scanner.hasNextInt()) {
+            System.out.print("Invalid input. Please enter an integer: ");
+            scanner.next();
+        }
+        return scanner.nextInt();
+    }
 
     private static ProcessPanel getProcessPanel(ArrayList<Process> ganttChar) {
         int totalWidth = 50;
@@ -46,6 +80,7 @@ public class Main {
 
         ProcessPanel processPanel = getProcessPanel(ganttChar);
 
+
         // Create and display the GUI
         JFrame frame = new JFrame("Process Visualization");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,8 +92,8 @@ public class Main {
         frame.add(scrollPane);
 
         // Use pack() to adjust the frame size dynamically
+        frame.setLocationRelativeTo(null); // This ensures the frame is centered
         frame.pack();
-
 
         // Make the frame visible
         frame.setVisible(true);
@@ -73,6 +108,7 @@ public class Main {
             Scanner scanner = new Scanner(inputFile);
 
             String line = "";
+
             if (scanner.hasNextLine()){
                 line = scanner.nextLine();
             }
@@ -90,28 +126,9 @@ public class Main {
             }
 
 
-            int agingTime = 10;
-            String op = "4";
-            SchedulingAlgorithms sch = null;
+            int agingTime = 2;
+            SchedulingAlgorithms sch = chooseScheduler(processes, contextSwitching, agingTime);
             if (processes.size() != 0){
-                switch (op) {
-                    case "1":
-                        sch = new PriorityScheduling(processes, contextSwitching);
-                        break;
-                    case "2":
-                        sch = new SJFScheduling(processes, agingTime);
-                        break;
-                    case "3":
-                        sch = new SRTFScheduling(processes, contextSwitching, agingTime);
-                        break;
-                    case "4":
-                        sch = new FCAI(processes, contextSwitching, agingTime);
-                        break;
-                    default:
-                        sch = null; // Handle invalid options (optional)
-                        System.out.println("Invalid option. Please select a valid scheduling algorithm.");
-                }
-
                 if (sch != null) {
                     sch.calcWaitingTime();
                     printAnswer(sch.processesExecutionOrder(), sch.ganttChart());

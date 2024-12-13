@@ -173,8 +173,6 @@ public class FCAI extends AbstractSchedulingAlgorithm {
         currentTime += contex;
 
 
-
-
         System.out.println("Executed process: " + currentProcess.name
                 + ", Waiting Time: " + currentProcess.waitingTime + ", Turnaround Time: " + currentProcess.turnAroundTime);
 //        break;

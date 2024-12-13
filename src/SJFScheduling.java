@@ -10,6 +10,7 @@ public class SJFScheduling extends AbstractSchedulingAlgorithm{
 
     }
 
+
     @Override
     public void intializeReadyQueue() {
         readyQueue = new PriorityQueue<>(
@@ -18,12 +19,19 @@ public class SJFScheduling extends AbstractSchedulingAlgorithm{
     }
 
     @Override
+    protected void intializeArraivalQueue() {
+        pqArrivalTime = new PriorityQueue<>(
+                (p1, p2) -> (p1.arrivalTime == p2.arrivalTime) ? p1.burstTime - p2.burstTime : p1.arrivalTime - p2.arrivalTime
+        );
+    }
+
+    @Override
     public void calcAnswer(ArrayList<Process> processes, int contextTime, int agingTime) {
         super.priorityToZero();
         int piriorityTime = agingTime;
         while (!pqArrivalTime.isEmpty()){
             Process process = pqArrivalTime.poll();
-            if (answer.isEmpty())
+            if (answer.isEmpty())   
                 process.completionTime = process.arrivalTime + process.burstTime;
             else
                 process.completionTime = answer.get(answer.size() - 1).completionTime + process.burstTime;

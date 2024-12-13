@@ -48,7 +48,7 @@ public class SJFScheduling extends AbstractSchedulingAlgorithm{
                     Process[] pr = readyQueue.toArray(new Process[0]);
                     readyQueue.clear();
                     for (Process p : pr){
-                        if (p.arrivalTime + process.completionTime <= agingTime)
+                        if (process.completionTime - p.arrivalTime >= agingTime)
                             p.priorityNumber++;
                     }
                     for (Process p : pr)

@@ -55,12 +55,10 @@ public class SJFScheduling extends AbstractSchedulingAlgorithm{
                         readyQueue.add(p);
                     piriorityTime += agingTime;
                 }
-                else{
-                    Process process2 = readyQueue.poll();
-                    process2.completionTime = process.completionTime + process2.burstTime;
-                    process = process2;
-                    answer.add(process);
-                }
+                Process process2 = readyQueue.poll();
+                process2.completionTime = process.completionTime + process2.burstTime;
+                process = process2;
+                answer.add(process);
             }
 
         }
